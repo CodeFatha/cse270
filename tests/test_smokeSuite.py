@@ -8,8 +8,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 
 class TestSmokeSuite():
   def setup_method(self, method):
@@ -46,7 +46,8 @@ class TestSmokeSuite():
   def test_admin(self):
     self.driver.get("http://127.0.0.1:5500/teton/1.6/admin.html")
     self.driver.set_window_size(1391, 1080)
-    assert(self.vars["id=username"] == "null")
+    self.driver.find_element(By.ID, "username").send_keys("incorrect")
+    self.driver.find_element(By.ID, "password").send_keys("incorrect")
     assert(self.vars["css=.errorMessage"] == "null")
   
   def test_join(self):
