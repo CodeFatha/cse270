@@ -9,13 +9,10 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.chrome.options import Options
 
 class TestSmokeSuite():
   def setup_method(self, method):
-    options = Options()
-    options.add_argument("--headless=new")
-    self.driver = webdriver.Chrome(options=options)
+    self.driver = webdriver.Chrome()
     self.vars = {}
   
   def teardown_method(self, method):
@@ -41,19 +38,25 @@ class TestSmokeSuite():
     self.driver.get("http://127.0.0.1:5500/teton/1.6/directory.html")
     self.driver.set_window_size(1391, 1080)
     assert self.driver.find_element(By.CSS_SELECTOR, ".gold-member:nth-child(9) > p:nth-child(2)").text == "Teton Turf and Tree"
-    assert self.driver.find_element(By.CSS_SELECTOR, ".gold-member:nth-child(9) > p:nth-child(2)").text == "Teton Turf and Tree"
   
   def test_admin(self):
     self.driver.get("http://127.0.0.1:5500/teton/1.6/admin.html")
     self.driver.set_window_size(1391, 1080)
     self.driver.find_element(By.ID, "username").send_keys("incorrect")
     self.driver.find_element(By.ID, "password").send_keys("incorrect")
-    assert(self.vars["css=.errorMessage"] == "null")
+    self.driver.find_element(By.CSS_SELECTOR, ".mysubmit:nth-child(4)").click()
+    WebDriverWait(self.driver, 30).until(expected_conditions.text_to_be_present_in_element((By.CSS_SELECTOR, ".errorMessage"), "Invalid username and password."))
   
   def test_join(self):
     self.driver.get("http://127.0.0.1:5500/teton/1.6/join.html")
     self.driver.set_window_size(1391, 1080)
     elements = self.driver.find_elements(By.NAME, "fname")
     assert len(elements) > 0
-    assert(self.vars["name=email"] == "null")
+    self.driver.find_element(By.NAME, "fname").send_keys("Bheki")
+    self.driver.find_element(By.NAME, "lname").send_keys("Ncube")
+    self.driver.find_element(By.NAME, "bizname").send_keys("Legacy")
+    self.driver.find_element(By.NAME, "biztitle").send_keys("CEO")
+    self.driver.find_element(By.NAME, "submit").click()
+    elements = self.driver.find_elements(By.NAME, "email")
+    assert len(elements) > 0
   
